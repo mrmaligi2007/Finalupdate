@@ -1,0 +1,55 @@
+{
+  "expo": {
+    "name": "Connect4v",
+    "slug": "connect4v",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "connect4v",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.connect4v.app",
+      "infoPlist": {
+        "NSCameraUsageDescription": "This app needs camera access to scan QR codes",
+        "NSPhotoLibraryUsageDescription": "This app needs photo library access to get QR codes from images",
+        "NSPhotoLibraryAddUsageDescription": "This app needs photo library access to save QR codes",
+        "NSLocationWhenInUseUsageDescription": "This app needs location access for finding nearby devices",
+        "NSContactsUsageDescription": "This app needs access to contacts to import phone numbers for user management"
+      }
+    },
+    "android": {
+      "package": "com.connect4v.app",
+      "permissions": [
+        "SEND_SMS",
+        "READ_SMS",
+        "RECEIVE_SMS",
+        "READ_CONTACTS"
+      ],
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/icon.png",
+        "backgroundColor": "#FFFFFF"
+      }
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "5ef705ef-a48e-475c-80fc-176f30292ee2"
+      }
+    }
+  }
+}
