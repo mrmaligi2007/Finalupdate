@@ -69,7 +69,7 @@ export default function AuthorizedUsersPage() {
 
   const sendSMS = async (command: string) => {
     if (!unitNumber) {
-      Alert.alert('Error', 'GSM relay number not set. Please configure device first.');
+      Alert.alert('Error', 'Connect4v number not set. Please configure device first.');
       return false;
     }
     
@@ -269,9 +269,35 @@ export default function AuthorizedUsersPage() {
   };
 
   // Set access control mode
-  const setAccessControlMode = (mode: 'AUT' | 'ALL') => {
+  const setAccessControlMode = async (mode: 'AUT' | 'ALL') => {
     const command = `${password}${mode}#`;
     sendSMS(command);
+    
+    // Save to AsyncStorage
+    await saveRelaySettings(mode);
+  };
+  
+  // Add function to save relay settings
+  const saveRelaySettings = async (accessControlMode: 'AUT' | 'ALL') => {
+    try {
+      // Get existing relay settings first to avoid overwriting other settings
+      const savedRelaySettings = await AsyncStorage.getItem('relaySettings');
+      let settings = { accessControl: accessControlMode, latchTime: '000' };
+      
+      if (savedRelaySettings) {
+        const existingSettings = JSON.parse(savedRelaySettings);
+        settings = { 
+          ...existingSettings, 
+          accessControl: accessControlMode
+        };
+      }
+      
+      console.log('Saving access control mode to storage:', settings.accessControl);
+      await AsyncStorage.setItem('relaySettings', JSON.stringify(settings));
+    } catch (error) {
+      console.error('Error saving relay settings:', error);
+      Alert.alert('Error', 'Failed to save access control settings');
+    }
   };
 
   // Update the pick contact function to navigate to the contact picker
@@ -325,7 +351,7 @@ export default function AuthorizedUsersPage() {
       <ScrollView style={styles.content} contentContainerStyle={styles.contentContainer}>
         <Card title="Admin Settings" style={styles.card}>
           <Text style={styles.infoText}>
-            Set the primary admin number that has full control over the GSM relay.
+            Set the primary admin number that has full control over the Connect4v.
           </Text>
           
           <View style={styles.formGroup}>

@@ -58,7 +58,7 @@ export default function Step1Page() {
 
   const sendSMS = async (command: string) => {
     if (!unitNumber) {
-      Alert.alert('Error', 'Please enter the GSM relay number first');
+      Alert.alert('Error', 'Please enter the Connect4v number first');
       return;
     }
 
@@ -132,7 +132,7 @@ export default function Step1Page() {
     }
     
     if (!unitNumber) {
-      Alert.alert('Error', 'Please enter the GSM relay phone number');
+      Alert.alert('Error', 'Please enter the Connect4v phone number');
       return;
     }
     
@@ -154,7 +154,7 @@ export default function Step1Page() {
       <ScrollView style={styles.content} contentContainerStyle={styles.contentContainer}>
         <Card title="Device Configuration">
           <TextInputField
-            label="GSM Relay Phone Number"
+            label="Connect4v Phone Number"
             value={unitNumber}
             onChangeText={setUnitNumber}
             placeholder="Enter device phone number"

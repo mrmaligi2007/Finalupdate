@@ -72,7 +72,21 @@ export default function ContactPickerPage() {
 
   const handleSelect = (contact: Contact) => {
     // Clean phone number - remove spaces, dashes, parentheses
-    const cleanedNumber = contact.phoneNumber.replace(/[\s\(\)\-]/g, '');
+    let cleanedNumber = contact.phoneNumber.replace(/[\s\(\)\-]/g, '');
+    
+    // Format the number to 04xxxxxxxx format
+    // Remove +61 prefix
+    if (cleanedNumber.startsWith('+61')) {
+      cleanedNumber = '0' + cleanedNumber.substring(3);
+    }
+    // Remove 61 prefix
+    else if (cleanedNumber.startsWith('61')) {
+      cleanedNumber = '0' + cleanedNumber.substring(2);
+    }
+    // If it doesn't have the leading 0, and it's an Australian mobile (starting with 4)
+    else if (cleanedNumber.startsWith('4') && cleanedNumber.length === 9) {
+      cleanedNumber = '0' + cleanedNumber;
+    }
     
     // Add timestamp to force update of params in receiving screen
     router.push({
@@ -80,7 +94,7 @@ export default function ContactPickerPage() {
       params: { 
         contactPhone: cleanedNumber, 
         contactName: contact.name,
-        timestamp: Date.now().toString()
+        timestamp: new Date().getTime().toString()
       }
     });
   };

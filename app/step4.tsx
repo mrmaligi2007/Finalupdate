@@ -128,7 +128,7 @@ export default function Step4Page() {
 
   const sendSMS = async (command: string) => {
     if (!unitNumber) {
-      Alert.alert('Error', 'GSM relay number not set. Please configure in Device Settings first.');
+      Alert.alert('Error', 'Connect4v number not set. Please configure in Device Settings first.');
       return;
     }
     
@@ -171,7 +171,7 @@ export default function Step4Page() {
     const command = type === 'ALL' ? `${password}ALL#` : `${password}AUT#`;
     await sendSMS(command);
     
-    // Save to AsyncStorage
+    // Save to AsyncStorage immediately
     await saveRelaySettings();
   };
 
@@ -256,52 +256,44 @@ export default function Step4Page() {
           <View style={styles.accessControlContainer}>
             <Text style={styles.accessControlTitle}>Access Control Mode</Text>
             <Text style={styles.accessControlDescription}>
-              Select who can control your GSM relay device
+              Select who can control your Connect4v device
             </Text>
             
-            {/* Toggle switch for access control */}
-            <View style={styles.toggleContainer}>
-              <View style={styles.toggleOption}>
-                <Ionicons 
-                  name="shield-checkmark-outline" 
-                  size={24} 
-                  color={relaySettings.accessControl === 'AUT' ? colors.primary : colors.textSecondary} 
-                />
-                <Text style={[
-                  styles.toggleText, 
-                  relaySettings.accessControl === 'AUT' && styles.toggleTextActive
-                ]}>
-                  Authorized Only
-                </Text>
-              </View>
-              
+            {/* Mode selection buttons replace toggle switch */}
+            <View style={styles.modeContainer}>
               <TouchableOpacity 
                 style={[
-                  styles.toggleSwitch,
-                  relaySettings.accessControl === 'ALL' && styles.toggleSwitchActive
+                  styles.modeOption,
+                  relaySettings.accessControl === 'AUT' && styles.modeOptionSelected
                 ]}
-                onPress={() => setAccessControl(relaySettings.accessControl === 'AUT' ? 'ALL' : 'AUT')}
-                activeOpacity={0.8}
+                onPress={() => setAccessControl('AUT')}
               >
                 <View style={[
-                  styles.toggleHandle,
-                  relaySettings.accessControl === 'ALL' && styles.toggleHandleActive
-                ]} />
-              </TouchableOpacity>
-              
-              <View style={styles.toggleOption}>
-                <Ionicons 
-                  name="globe-outline" 
-                  size={24} 
-                  color={relaySettings.accessControl === 'ALL' ? colors.primary : colors.textSecondary} 
-                />
-                <Text style={[
-                  styles.toggleText, 
-                  relaySettings.accessControl === 'ALL' && styles.toggleTextActive
+                  styles.modeIconContainer,
+                  relaySettings.accessControl === 'AUT' && styles.modeIconContainerSelected
                 ]}>
-                  Allow All
-                </Text>
-              </View>
+                  <Ionicons name="shield-checkmark" size={24} color={relaySettings.accessControl === 'AUT' ? "white" : colors.primary} />
+                </View>
+                <Text style={styles.modeTitle}>Authorized Only</Text>
+                <Text style={styles.modeDescription}>Only allowed numbers can access</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity 
+                style={[
+                  styles.modeOption,
+                  relaySettings.accessControl === 'ALL' && styles.modeOptionSelected
+                ]}
+                onPress={() => setAccessControl('ALL')}
+              >
+                <View style={[
+                  styles.modeIconContainer,
+                  relaySettings.accessControl === 'ALL' && styles.modeIconContainerSelected
+                ]}>
+                  <Ionicons name="globe" size={24} color={relaySettings.accessControl === 'ALL' ? "white" : colors.primary} />
+                </View>
+                <Text style={styles.modeTitle}>Allow All</Text>
+                <Text style={styles.modeDescription}>Any caller can access</Text>
+              </TouchableOpacity>
             </View>
             
             <View style={styles.commandContainer}>
@@ -313,124 +305,16 @@ export default function Step4Page() {
           </View>
         </Card>
         
-        {/* User Management section - only show when Authorized Only is selected */}
-        {relaySettings.accessControl === 'AUT' && (
-          <>
-            <View style={styles.userManagementHeader}>
-              <View style={styles.userManagementHeaderIcon}>
-                <Ionicons name="people" size={24} color={colors.primary} />
-              </View>
-              <View style={styles.userManagementHeaderContent}>
-                <Text style={styles.userManagementHeaderTitle}>User Management</Text>
-                <Text style={styles.userManagementHeaderSubtitle}>
-                  Add and manage authorized phone numbers
-                </Text>
-              </View>
-            </View>
-            
-            <Card title="Add Authorized User">
-              <View style={styles.formGroup}>
-                <Text style={styles.label}>Serial Number (001-200)</Text>
-                <TextInput
-                  style={styles.input}
-                  value={newUser.serial}
-                  onChangeText={(text) => setNewUser({...newUser, serial: text})}
-                  placeholder="Enter position (001-200)"
-                  keyboardType="number-pad"
-                  maxLength={3}
-                />
-              </View>
-              
-              <View style={styles.formGroup}>
-                <Text style={styles.label}>Phone Number</Text>
-                <View style={styles.inputRow}>
-                  <TextInput
-                    style={[styles.input, {flex: 1}]}
-                    value={newUser.phone}
-                    onChangeText={(text) => setNewUser({...newUser, phone: text})}
-                    placeholder="Enter phone number with country code"
-                    keyboardType="phone-pad"
-                  />
-                  <TouchableOpacity 
-                    style={styles.contactPickerButton}
-                    onPress={pickContact}
-                  >
-                    <Ionicons name="people" size={20} color="white" />
-                  </TouchableOpacity>
-                </View>
-              </View>
-              
-              <View style={styles.formGroup}>
-                <Text style={styles.label}>Name (Optional)</Text>
-                <TextInput
-                  style={styles.input}
-                  value={newUser.name}
-                  onChangeText={(text) => setNewUser({...newUser, name: text})}
-                  placeholder="Enter user name for reference"
-                />
-              </View>
-              
-              <View style={styles.commandPreviewContainer}>
-                <Text style={styles.commandLabel}>Command Preview:</Text>
-                <Text style={styles.commandText}>
-                  {password}A{newUser.serial.padStart(3, '0') || '001'}#{newUser.phone || 'xxxxxxxxxx'}#
-                </Text>
-              </View>
-              
-              <Button
-                title="Add User"
-                onPress={addUser}
-                loading={isLoading}
-                icon={<Ionicons name="person-add-outline" size={20} color="white" />}
-                fullWidth
-                disabled={!newUser.serial || !newUser.phone}
-              />
-            </Card>
-            
-            <Card title="Authorized Users">
-              {users.length === 0 ? (
-                <View style={styles.emptyContainer}>
-                  <Ionicons name="people-outline" size={40} color={colors.textSecondary} />
-                  <Text style={styles.emptyText}>No authorized users added yet.</Text>
-                </View>
-              ) : (
-                users.map((user, index) => (
-                  <View key={user.serial} style={[
-                    styles.userItem,
-                    index < users.length - 1 && styles.userItemBorder
-                  ]}>
-                    <View style={styles.userInfo}>
-                      <View style={styles.userSerialContainer}>
-                        <Text style={styles.userSerial}>{user.serial}</Text>
-                      </View>
-                      <View style={styles.userDetails}>
-                        <Text style={styles.userName}>{user.name || `User ${user.serial}`}</Text>
-                        <Text style={styles.userPhone}>{user.phone}</Text>
-                      </View>
-                    </View>
-                    <TouchableOpacity 
-                      style={styles.deleteButton}
-                      onPress={() => deleteUser(user.serial)}
-                    >
-                      <Ionicons name="trash-outline" size={20} color={colors.error} />
-                    </TouchableOpacity>
-                  </View>
-                ))
-              )}
-            </Card>
-            
-            <Button 
-              title="Advanced User Management"
-              onPress={() => router.push('/authorized-users')}
-              variant="secondary"
-              icon={<Ionicons name="settings-outline" size={20} color={colors.primary} />}
-              fullWidth
-              style={styles.advancedButton}
-            />
-          </>
-        )}
+        {/* Replace conditional rendering with button to user management */}
+        <Button 
+          title="Manage Authorized Users"
+          onPress={() => router.push('/user-management')}
+          icon={<Ionicons name="people" size={20} color="white" />}
+          fullWidth
+          style={styles.userManagementButton}
+        />
         
-        {/* Message when Allow All is selected */}
+        {/* Info card for Allow All mode */}
         {relaySettings.accessControl === 'ALL' && (
           <Card style={styles.infoCard}>
             <View style={styles.infoContent}>
@@ -505,16 +389,13 @@ const styles = StyleSheet.create({
   modeIconContainerSelected: {
     backgroundColor: colors.primary,
   },
-  modeOptionText: {
+  modeTitle: {
     fontSize: 16,
     fontWeight: '600',
     color: colors.text,
-    marginBottom: spacing.xxs,
+    marginBottom: 4,
   },
-  modeOptionTextSelected: {
-    color: colors.primary,
-  },
-  modeOptionDescription: {
+  modeDescription: {
     fontSize: 12,
     color: colors.textSecondary,
     textAlign: 'center',
@@ -527,6 +408,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     borderColor: colors.border,
+  },
+  userManagementButton: {
+    marginTop: spacing.md,
   },
   userManagementHeader: {
     flexDirection: 'row',

@@ -65,7 +65,7 @@ export default function RelayTimingPage() {
 
   const sendSMS = async (command: string) => {
     if (!unitNumber) {
-      Alert.alert('Error', 'GSM relay number not set. Please configure device first.');
+      Alert.alert('Error', 'Connect4v number not set. Please configure device first.');
       return;
     }
     

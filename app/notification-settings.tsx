@@ -190,7 +190,7 @@ export default function NotificationSettingsPage() {
         {/* Stop Random SMS Section */}
         <Card title="Stop Random SMS" style={styles.card}>
           <Text style={styles.sectionDescription}>
-            Stop receiving random promotional SMS messages from your GSM device:
+            Stop receiving random promotional SMS messages from your Connect4v device:
           </Text>
           
           <View style={styles.commandsContainer}>

@@ -99,7 +99,7 @@ export default function Step2Page() {
 
   const sendSMS = async (command) => {
     if (!unitNumber) {
-      Alert.alert('Error', 'GSM relay number not set. Please configure in Settings first.');
+      Alert.alert('Error', 'Connect4v number not set. Please configure in Settings first.');
       return false;
     }
 

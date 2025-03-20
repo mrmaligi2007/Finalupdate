@@ -79,7 +79,7 @@ export default function SetupPage() {
     {
       id: 'notifications',
       title: 'Notification Settings',
-      description: 'Configure who receives SMS notifications',
+      description: 'Configure SMS notifications',
       icon: 'notifications-outline',
       route: '/notification-settings'
     }
