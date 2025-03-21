@@ -3,7 +3,7 @@ import { StyleSheet, View, Text, ScrollView, Platform, Linking, Alert, Touchable
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { TextInputField } from './components/TextInputField';
 import { Button } from './components/Button';
 import { Card } from './components/Card';
@@ -61,9 +61,18 @@ export default function Step2Page() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
+  // Initial load on mount
   useEffect(() => {
     loadSettings();
   }, []);
+  
+  // Reload settings when screen comes into focus
+  useFocusEffect(
+    React.useCallback(() => {
+      console.log("Step2 page focused - reloading settings");
+      loadSettings();
+    }, [])
+  );
 
   const loadSettings = async () => {
     try {
@@ -169,7 +178,7 @@ export default function Step2Page() {
         // Show success message and navigate back to setup
         Alert.alert(
           'Success',
-          'Password change command sent. The GSM relay password has been updated.',
+          'Password change command sent successfully. The app has been updated with your new password. All screens will now use the new password for commands.',
           [{ text: 'OK', onPress: () => router.push('/setup') }]
         );
       } else {

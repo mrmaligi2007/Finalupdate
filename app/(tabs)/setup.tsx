@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, Platform, Linking } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
@@ -29,9 +29,18 @@ export default function SetupPage() {
   });
   const [isLoading, setIsLoading] = useState(false);
 
+  // Initial load on mount
   useEffect(() => {
     loadData();
   }, []);
+
+  // Reload data when screen is focused
+  useFocusEffect(
+    React.useCallback(() => {
+      console.log("Setup page focused - reloading data");
+      loadData();
+    }, [])
+  );
 
   const loadData = async () => {
     try {

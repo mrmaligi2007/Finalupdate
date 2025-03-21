@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Connect4v",
-    "slug": "connect4v",
+    "name": "APC",
+    "slug": "apc",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -10,7 +10,7 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.connect4v.app",
+      "bundleIdentifier": "com.apc.app",
       "infoPlist": {
         "NSCameraUsageDescription": "This app needs camera access to scan QR codes",
         "NSPhotoLibraryUsageDescription": "This app needs photo library access to get QR codes from images",
@@ -20,7 +20,7 @@
       }
     },
     "android": {
-      "package": "com.connect4v.app",
+      "package": "com.apc.app",
       "permissions": [
         "SEND_SMS",
         "READ_SMS",

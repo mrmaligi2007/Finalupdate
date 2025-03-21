@@ -7,6 +7,7 @@ import { Card } from '../components/Card';
 import { Button } from '../components/Button';
 import { colors, spacing, shadows } from '../styles/theme';
 import { LogoHeader } from '../components/LogoHeader';
+import { useFocusEffect } from 'expo-router';
 
 export default function HomePage() {
   const [unitNumber, setUnitNumber] = useState('');
@@ -14,9 +15,18 @@ export default function HomePage() {
   const [isLoading, setIsLoading] = useState(false);
   const [lastAction, setLastAction] = useState<{ action: string; timestamp: Date } | null>(null);
 
+  // Initial load on mount
   useEffect(() => {
     loadSettings();
   }, []);
+
+  // Reload settings when screen comes into focus
+  useFocusEffect(
+    React.useCallback(() => {
+      console.log("Home page focused - reloading settings");
+      loadSettings();
+    }, [])
+  );
 
   const loadSettings = async () => {
     try {

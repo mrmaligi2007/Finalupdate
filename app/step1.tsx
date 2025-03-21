@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, ScrollView, Alert, Platform, Linking } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Header } from './components/Header';
 import { Card } from './components/Card';
@@ -16,9 +16,18 @@ export default function Step1Page() {
   const [adminNumber, setAdminNumber] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   
+  // Initial load on mount
   useEffect(() => {
     loadData();
   }, []);
+  
+  // Reload when screen is focused
+  useFocusEffect(
+    React.useCallback(() => {
+      console.log("Step1 page focused - reloading data");
+      loadData();
+    }, [])
+  );
 
   const loadData = async () => {
     try {
@@ -83,11 +92,22 @@ export default function Step1Page() {
       await Linking.openURL(smsUrl);
       await saveToLocalStorage();
       
-      Alert.alert(
-        'Success', 
-        'Command sent and settings saved',
-        [{ text: 'OK', onPress: () => router.push('/setup') }]
-      );
+      // Add a delay to allow SMS to be sent
+      setTimeout(() => {
+        Alert.alert(
+          'Success', 
+          'Command sent and settings saved. The app will now refresh your data.',
+          [{ 
+            text: 'OK', 
+            onPress: () => {
+              // First reload data locally
+              loadData();
+              // Then navigate back to setup page which will refresh data
+              router.push('/setup');
+            } 
+          }]
+        );
+      }, 500);
     } catch (error) {
       console.error('Failed to send SMS:', error);
       Alert.alert('Error', 'Failed to open SMS app');
@@ -136,15 +156,21 @@ export default function Step1Page() {
       return;
     }
     
-    // Format admin number according to required format
-    const formattedNumber = formatAdminNumber(adminNumber);
+    // Format unit number according to required format (not admin number)
+    const formattedUnitNumber = formatAdminNumber(unitNumber);
     
     // Update state with formatted number
-    setAdminNumber(formattedNumber);
+    setAdminNumber(adminNumber); // Keep admin number as is in state
     
-    // Format command for setting admin number
-    const command = `${password}TEL${formattedNumber}#`;
-    sendSMS(command);
+    // Format command for setting admin number - use unit's formatted number as the target
+    const command = `${password}TEL${formattedUnitNumber}#`;
+    
+    // Add feedback before sending
+    Alert.alert(
+      'Sending Command',
+      'The app will now open your SMS app to send the command. After sending, please return to the app to complete setup.',
+      [{ text: 'Continue', onPress: () => sendSMS(command) }]
+    );
   };
 
   return (
@@ -195,7 +221,7 @@ export default function Step1Page() {
             <View style={styles.commandPreviewContainer}>
               <Text style={styles.commandLabel}>Command:</Text>
               <Text style={styles.commandText}>
-                {password}TEL{formatAdminNumber(adminNumber) || 'xxxxxxxx'}#
+                {password}TEL{formatAdminNumber(unitNumber) || 'xxxxxxxx'}#
               </Text>
             </View>
             

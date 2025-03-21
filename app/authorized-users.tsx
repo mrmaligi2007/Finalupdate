@@ -39,9 +39,18 @@ export default function AuthorizedUsersPage() {
   const [startSerial, setStartSerial] = useState('');
   const [endSerial, setEndSerial] = useState('');
 
+  // Initial load
   useEffect(() => {
     loadData();
   }, []);
+  
+  // Reload data when screen is focused
+  useFocusEffect(
+    React.useCallback(() => {
+      console.log("AuthorizedUsers page focused - reloading data");
+      loadData();
+    }, [])
+  );
 
   const loadData = async () => {
     try {
@@ -141,14 +150,19 @@ export default function AuthorizedUsersPage() {
       return;
     }
     
-    // Format admin number according to required format
-    const formattedNumber = formatAdminNumber(adminNumber);
+    if (!unitNumber) {
+      Alert.alert('Error', 'Connect4v number not set. Please configure device first.');
+      return;
+    }
     
-    // Update state with formatted number
-    setAdminNumber(formattedNumber);
+    // Format unit number according to required format (not admin number)
+    const formattedUnitNumber = formatAdminNumber(unitNumber);
     
-    // Format command for setting admin number
-    const command = `${password}TEL${formattedNumber}#`;
+    // Update state with formatted admin number
+    setAdminNumber(adminNumber);
+    
+    // Format command for setting admin number - use unit's formatted number as the target
+    const command = `${password}TEL${formattedUnitNumber}#`;
     
     sendSMS(command);
   };

@@ -37,7 +37,12 @@ export const sendSMS = async (
 
     // Open the SMS app with the pre-filled message
     await Linking.openURL(smsUrl);
-    if (onSuccess) onSuccess();
+    
+    // After returning from SMS app, notify caller of success
+    setTimeout(() => {
+      if (onSuccess) onSuccess();
+    }, 500);
+    
     return true;
   } catch (error) {
     console.error('Failed to send SMS:', error);
@@ -50,7 +55,7 @@ export const sendSMS = async (
   }
 };
 
-// Format admin phone number to ensure it has 0061 prefix (for Australian numbers)
+// Format phone number to required format (0061XXXXXXXXX)
 export const formatPhoneNumber = (number: string): string => {
   // Remove all non-digit characters
   let cleaned = number.replace(/\D/g, '');
